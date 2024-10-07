@@ -1,12 +1,12 @@
 %{
-#include"y.tab.h"
+#include "y.tab.h"
 %}
 
 %%
-"for" {return FOR;}
-"<"|">"|"<="|">="|"=="|"!=" { return OP;}
+"for" { return FOR;}
 "int"|"float"|"char"|"double" { return TYPE;}
-[a-zA-Z]+ {return ID;}
+">"|"<"|"<="|">="|"!="|"==" { return OP;}
+[a-zA-Z]+ { return ID;}
 [0-9]+ { return NUM;}
 [\n\t ] { }
 . { return yytext[0];}
