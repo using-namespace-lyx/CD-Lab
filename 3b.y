@@ -2,62 +2,72 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-int yylex();
 int yyerror();
-
-int count=0;
-
+int yylex();
+int depth=0;
 %}
 
-%token TYPE FOR ID NUM OP
+%token FOR TYPE OP ID NUM
 %left '+' '-'
 %left '*' '/'
 
 %%
 
-S : F
+SS : S1 ';' SS { $$=$3;}
+   | F SS { $$=$1>$2?$1:$2;
+   	if($$>depth)
+   	{
+   	  depth=$$;
+   	}
+   	}
+   | { $$=0;}
+   ;
+   
+F : FOR '(' DA ';' COND ';' E ')' BODY {$$=$9+1;}
   ;
   
-F : FOR '(' DA ';' COND ';' S1 ')' BODY {count++;}
-  ;
-  
+BODY : S1 ';'  { $$=0;}
+     | '{' SS '}'{ $$ = $2;}
+     | F {$$=$1;}
+     | ';' {$$=0;}
+     ;
+
 DA : D | A
    ;
    
 D : TYPE ID | TYPE A
   ;
   
-A : ID '=' E
-  ;
-
-E : E '+' E | E '-' E | E '*' E | E '/' E | '-''-'E | '+''+'E | E'+''+' | E'-''-' | T ;  
-
-COND : T OP T
-     ;
-
-T : NUM | ID
+A : ID '=' E 
   ;
   
-BODY : S1 ';' | '{' SS '}' | F | ';'
+E : E '+' E | E '-' E | E '*' E | E '/' E | E '+' '+' | '+' '+' E | '-' '-' E | E '-' '-' | T
+  ;
+  
+T : ID | NUM
+  ;
+  
+COND : T OP T
      ;
      
-S1 : E | D | A
-   ;
-   
-SS : S1 ';' SS | F SS |
+S1 : A | D | E
    ;
    
 %%
-
 int yyerror()
 {
-printf("errror");
+printf("\nError\n");
 exit(1);
 }
 
 int main()
 {
 yyparse();
-printf("\nCount:%d",count);
+if(depth>=3)
+{
+printf("\nNo of nesting levels: %d",depth);
 }
-  
+else
+printf("\n INvalid with %d levels of max nesting",depth);
+return 0;
+}
