@@ -10,6 +10,8 @@ int count=0;
 %}
 
 %token TYPE FOR ID NUM OP
+%left '+' '-'
+%left '*' '/'
 
 %%
 
@@ -28,9 +30,8 @@ D : TYPE ID | TYPE A
 A : ID '=' E
   ;
 
-E : E '+' E | E '-' E | E '*' E | T | E '+' '+' 
-  ;
-  
+E : E '+' E | E '-' E | E '*' E | E '/' E | '-''-'E | '+''+'E | E'+''+' | E'-''-' | T ;  
+
 COND : T OP T
      ;
 
